@@ -1,80 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Groq Assistant - Mixtral</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
-    #question {
-      width: 80%;
-      padding: 12px;
-      font-size: 16px;
-    }
-    button {
-      padding: 12px 18px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    pre {
-      margin-top: 20px;
-      background: #fff;
-      padding: 15px;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-    }
-  </style>
-</head>
 <body>
-
-  <h2>Ask Mixtral (Groq API)</h2>
-  <input type="text" id="question" placeholder="Ask your question..." />
-  <button onclick="askGroq()">Ask</button>
-  <pre id="response">Response will appear here...</pre>
+  <h3>Groq API Test</h3>
+  <input id="q" placeholder="Ask something..." style="width: 300px;" />
+  <button onclick="go()">Ask</button>
+  <pre id="out">Waiting...</pre>
 
   <script>
-    async function askGroq() {
-      const apiKey = "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"; // +IZA Yaha apni Groq API key daalna
-      const input = document.getElementById("question").value;
-      const output = document.getElementById("response");
-
-      if (!input.trim()) {
-        output.innerText = "Please enter a question.";
-        return;
-      }
-
-      output.innerText = "Thinking...";
+    async function go() {
+      const key = "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"; // <-- apna Groq API key lagao
+      const q = document.getElementById("q").value;
+      const out = document.getElementById("out");
+      out.innerText = "Thinking...";
 
       try {
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
+            "Authorization": `Bearer ${key}`
           },
           body: JSON.stringify({
             model: "mixtral-8x7b-32768",
             messages: [
               { role: "system", content: "You are a helpful assistant." },
-              { role: "user", content: input }
+              { role: "user", content: q }
             ]
           })
         });
 
         const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content;
-        output.innerText = reply || "No response.";
-      } catch (error) {
-        console.error(error);
-        output.innerText = "Error: " +- error.message;
+        console.log("Response:", data); // Debug line
+        const reply = data.choices?.[0]?.message?.content || "No valid reply.";
+        out.innerText = reply;
+      } catch (e) {
+        console.error("Error:", e);
+        out.innerText = "Error: " +- e.message;
       }
     }
   </script>
-
 </body>
 </html>
