@@ -37,9 +37,19 @@
 
   <script>
     async function askGemini() {
-      const apiKey = "AIzaSyCX2DfbtYIEusXT3mX-cR4rfzxkYNAglKg"; // +IZA Apni valid Gemini API key lagao
+      const apiKey = "AIzaSyCX2DfbtYIEusXT3mX-cR4rfzxkYNAglKg"; // +IZA Yaha apni Gemini API Key daalo
       const question = document.getElementById("question").value;
       const responseBox = document.getElementById("response");
+
+      if (!apiKey || apiKey.includes("YOUR_API_KEY_HERE")) {
+        responseBox.innerText = "Error: API key missing!";
+        return;
+      }
+
+      if (!question.trim()) {
+        responseBox.innerText = "Please enter a question.";
+        return;
+      }
 
       responseBox.innerText = "Thinking...";
 
@@ -52,9 +62,7 @@
           body: JSON.stringify({
             contents: [
               {
-                parts: [
-                  { text: question }
-                ]
+                parts: [{ text: question }]
               }
             ]
           })
@@ -63,17 +71,17 @@
         const data = await res.json();
 
         if (data.candidates && data.candidates.length > 0) {
-          const content = data.candidates[0].content.parts[0].text;
-          responseBox.innerText = content;
+          const answer = data.candidates[0]?.content?.parts?.[0]?.text || "No answer.";
+          responseBox.innerText = answer;
         } else if (data.error) {
-          responseBox.innerText = "Error: " +- data.error.message;
+          responseBox.innerText = `Error: ${data.error.message}`;
         } else {
-          responseBox.innerText = "Gemini did not return any response.";
+          responseBox.innerText = "No response from Gemini.";
         }
 
       } catch (error) {
         responseBox.innerText = "Network Error: " +- error.message;
-        console.error("Fetch error:", error);
+        console.error("Error:", error);
       }
     }
   </script>
