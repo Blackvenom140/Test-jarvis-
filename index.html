@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini AI Assistant</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f1f1f1;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      width: 60%;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    pre {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Ask Gemini AI</h2>
+  <input type="text" id="question" placeholder="Ask something..." />
+  <button onclick="askGemini()">Ask</button>
+  <pre id="response">Response will appear here...</pre>
+
+  <script>
+    async function askGemini() {
+      const apiKey = "AIzaSyCX2DfbtYIEusXT3mX-cR4rfzxkYNAglKg"; // +IZA Apni valid Gemini API key lagao
+      const question = document.getElementById("question").value;
+      const responseBox = document.getElementById("response");
+
+      responseBox.innerText = "Thinking...";
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: question }
+                ]
+              }
+            ]
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.candidates && data.candidates.length > 0) {
+          const content = data.candidates[0].content.parts[0].text;
+          responseBox.innerText = content;
+        } else if (data.error) {
+          responseBox.innerText = "Error: " +- data.error.message;
+        } else {
+          responseBox.innerText = "Gemini did not return any response.";
+        }
+
+      } catch (error) {
+        responseBox.innerText = "Network Error: " +- error.message;
+        console.error("Fetch error:", error);
+      }
+    }
+  </script>
+
+</body>
+</html>
